@@ -18,14 +18,28 @@ inputs:
     required: false
     default: "."
 
+
 runs:
   using: composite
   steps:
+    - name: Write config
+      id: config
+      shell: bash
+      run: |
+        parentDir=${{ inputs.working-directory }}/build
+        outputFile=${parentDir}/codeqlconfig.yaml
+        mkdir -p "$parentDir"
+        cat > "$outputFile" <<'EOF'
+        paths:
+          - ${{ inputs.working-directory }}
+        EOF
+        echo "::set-output name=output-file::$outputFile"
+
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v2
       with:
+        config-file: ${{ steps.config.outputs.output-file }}
         languages: ${{ inputs.languages }}
-        source-root: ${{ inputs.working-directory }}
 
     - if: inputs.auto-build == 'true'
       name: Auto-build

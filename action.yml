@@ -33,7 +33,7 @@ runs:
         paths:
           - ${{ inputs.working-directory }}
         EOF
-        echo "::set-output name=output-file::$outputFile"
+        echo "output-file=$outputFile" >> $GITHUB_OUTPUT
 
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v2

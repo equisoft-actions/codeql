@@ -7,6 +7,9 @@ inputs:
     description: Use CodeQL's auto-build.
     required: false
     default: "false"
+  build-script:
+    description: Optional path to an executable file that will perform a full, uncached, build for CodeQL analysis.
+    required: false
   languages:
     description: The languages of the checks to run, separated by a comma. Learn more about CodeQL language support at https://aka.ms/codeql-docs/language-support.
     required: true
@@ -18,11 +21,10 @@ inputs:
     required: false
     default: "."
 
-
 runs:
   using: composite
   steps:
-    - name: Write config
+    - name: Write CodeQL config file
       id: config
       shell: bash
       run: |
@@ -32,6 +34,8 @@ runs:
         cat > "$outputFile" <<'EOF'
         paths:
           - ${{ inputs.working-directory }}
+        queries:
+          - uses: security-extended
         EOF
         echo "output-file=$outputFile" >> $GITHUB_OUTPUT
 
@@ -44,6 +48,13 @@ runs:
     - if: inputs.auto-build == 'true'
       name: Auto-build
       uses: github/codeql-action/autobuild@v2
+
+    - name: Execute build script
+      if: inputs.build-script != ''
+      env:
+        BUILD_SCRIPT: ${{ inputs.build-script }}
+      working-directory: ${{ inputs.working-directory }}
+      run: exec "$(realpath "$BUILD_SCRIPT")"
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2

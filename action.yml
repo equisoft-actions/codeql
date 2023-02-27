@@ -27,13 +27,14 @@ runs:
     - name: Write CodeQL config file
       id: config
       shell: bash
+      working-directory: ${{ inputs.working-directory }}
       run: |
-        parentDir=${{ inputs.working-directory }}/build
+        parentDir=$(realpath ./build)
         outputFile=${parentDir}/codeqlconfig.yaml
         mkdir -p "$parentDir"
         cat > "$outputFile" <<'EOF'
         paths:
-          - ${{ inputs.working-directory }}
+          - $(pwd)
         queries:
           - uses: security-extended
         EOF

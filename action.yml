@@ -29,21 +29,21 @@ runs:
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
-        parentDir=$(realpath ./build)
-        outputFile=${parentDir}/codeqlconfig.yaml
-        mkdir -p "$parentDir"
-        cat > "$outputFile" <<'EOF'
+        buildDir=$(realpath ./build)
+        configFile="${buildDir}/codeqlconfig.yaml"
+        mkdir -p "$buildDir"
+        cat > "$configFile" <<EOF
         paths:
           - $(pwd)
         queries:
           - uses: security-extended
         EOF
-        echo "output-file=$outputFile" >> $GITHUB_OUTPUT
+        echo "config-file=$configFile" >> $GITHUB_OUTPUT
 
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v2
       with:
-        config-file: ${{ steps.config.outputs.output-file }}
+        config-file: ${{ steps.config.outputs.config-file }}
         languages: ${{ inputs.languages }}
 
     - if: inputs.auto-build == 'true'

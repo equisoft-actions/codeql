@@ -27,14 +27,13 @@ runs:
     - name: Write CodeQL config file
       id: config
       shell: bash
-      working-directory: ${{ inputs.working-directory }}
       run: |
-        buildDir=$(realpath ./build)
+        buildDir="${{ inputs.working-directory }}/build"
         configFile="${buildDir}/codeqlconfig.yaml"
         mkdir -p "$buildDir"
-        cat > "$configFile" <<EOF
+        cat > "$configFile" <<'EOF'
         paths:
-          - $(pwd)
+          - ${{ inputs.working-directory }}
         queries:
           - uses: security-extended
         EOF
@@ -52,11 +51,9 @@ runs:
 
     - name: Execute build script
       if: inputs.build-script != ''
-      env:
-        BUILD_SCRIPT: ${{ inputs.build-script }}
       shell: bash
-      working-directory: ${{ inputs.working-directory }}
-      run: exec "$(realpath "$BUILD_SCRIPT")"
+      run: |
+        exec "${{ inputs.working-directory }}/${{ inputs.build-script }}"
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2

@@ -34,8 +34,6 @@ runs:
         cat > "$configFile" <<'EOF'
         paths:
           - ${{ inputs.working-directory }}
-        queries:
-          - uses: security-extended
         EOF
         echo "config-file=$configFile" >> $GITHUB_OUTPUT
 
@@ -44,6 +42,7 @@ runs:
       with:
         config-file: ${{ steps.config.outputs.config-file }}
         languages: ${{ inputs.languages }}
+        queries: security-extended
 
     - if: inputs.auto-build == 'true'
       name: Auto-build

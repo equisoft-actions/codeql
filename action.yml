@@ -16,6 +16,9 @@ inputs:
   category:
     description: String used by Code Scanning for matching the analyses.
     required: false
+  extra-paths:
+    description: Newline-separated list of additional paths to include in the CodeQL analysis.
+    required: false
   working-directory:
     description: Relative path under $GITHUB_WORKSPACE where the root project is located.
     required: false
@@ -31,12 +34,21 @@ runs:
         buildDir="${{ inputs.working-directory }}/build"
         configFile="${buildDir}/codeqlconfig.yaml"
         mkdir -p "$buildDir"
-        cat > "$configFile" <<'EOF'
-        paths:
-          - ${{ inputs.working-directory }}
-        queries:
-          - uses: security-extended
-        EOF
+        paths=("${{ inputs.working-directory }}")
+
+        while IFS= read -r path; do
+          [ -n "$path" ] && paths+=("$path")
+        done <<< "${{ inputs.extra-paths }}"
+
+        {
+          echo "paths:"
+          for path in "${paths[@]}"; do
+            echo "  - $path"
+          done
+          echo "queries:"
+          echo "  - uses: security-extended"
+        } > "$configFile"
+
         echo "config-file=$configFile" >> $GITHUB_OUTPUT
 
     - name: Initialize CodeQL

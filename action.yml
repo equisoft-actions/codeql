@@ -40,14 +40,14 @@ runs:
         echo "config-file=$configFile" >> $GITHUB_OUTPUT
 
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4
+      uses: github/codeql-action/init@54f647b7e1bb85c95cddabcd46b0c578ec92bc1a # v4
       with:
         config-file: ${{ steps.config.outputs.config-file }}
         languages: ${{ inputs.languages }}
 
     - if: inputs.auto-build == 'true'
       name: Auto-build
-      uses: github/codeql-action/autobuild@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4
+      uses: github/codeql-action/autobuild@54f647b7e1bb85c95cddabcd46b0c578ec92bc1a # v4
 
     - name: Execute build script
       if: inputs.build-script != ''
@@ -56,6 +56,6 @@ runs:
         exec "${{ inputs.working-directory }}/${{ inputs.build-script }}"
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4
+      uses: github/codeql-action/analyze@54f647b7e1bb85c95cddabcd46b0c578ec92bc1a # v4
       with:
         category: ${{ inputs.category }}

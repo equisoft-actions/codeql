@@ -64,5 +64,15 @@ runs:
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@54f647b7e1bb85c95cddabcd46b0c578ec92bc1a # v4
+      env:
+        CODEQL_ACTION_EXTRA_OPTIONS: >
+          {
+            "database": {
+              "run-queries": [
+                "--additional-packs=${{ github.action_path }}",
+                "--extension-packs=equisoft-actions/codeql-actions-models"
+              ]
+            }
+          }
       with:
         category: ${{ inputs.category }}

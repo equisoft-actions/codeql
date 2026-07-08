@@ -1,0 +1,7 @@
+name: equisoft-actions/codeql-actions-models
+version: 0.0.1
+library: true
+extensionTargets:
+  codeql/actions-all: "*"
+dataExtensions:
+  - models/**/*.model.yml

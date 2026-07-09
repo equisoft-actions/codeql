@@ -42,20 +42,37 @@ runs:
     - name: Initialize CodeQL
       uses: github/codeql-action/init@54f647b7e1bb85c95cddabcd46b0c578ec92bc1a # v4
       with:
+        build-mode: |-
+          ${{ case(
+            inputs.build-script != '', 'manual',
+            inputs.auto-build == 'true', 'autobuild',
+            'none'
+          ) }}
         config-file: ${{ steps.config.outputs.config-file }}
         languages: ${{ inputs.languages }}
-
-    - if: inputs.auto-build == 'true'
-      name: Auto-build
-      uses: github/codeql-action/autobuild@54f647b7e1bb85c95cddabcd46b0c578ec92bc1a # v4
 
     - name: Execute build script
       if: inputs.build-script != ''
       shell: bash
       run: |
-        exec "${{ inputs.working-directory }}/${{ inputs.build-script }}"
+        if [ -x "${{ inputs.working-directory }}/${{ inputs.build-script }}" ]; then
+          exec "${{ inputs.working-directory }}/${{ inputs.build-script }}"
+          exit 0
+        fi
+
+        ${{ inputs.build-script }}
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@54f647b7e1bb85c95cddabcd46b0c578ec92bc1a # v4
+      env:
+        CODEQL_ACTION_EXTRA_OPTIONS: >
+          {
+            "database": {
+              "run-queries": [
+                "--additional-packs=${{ github.action_path }}",
+                "--extension-packs=equisoft-actions/codeql-actions-models"
+              ]
+            }
+          }
       with:
         category: ${{ inputs.category }}

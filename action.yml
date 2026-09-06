@@ -40,7 +40,7 @@ runs:
         echo "config-file=$configFile" >> $GITHUB_OUTPUT
 
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@5595ccaf912efad79be6eef63a5619ff05969be3 # v4
+      uses: github/codeql-action/init@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4
       with:
         build-mode: |-
           ${{ case(
@@ -63,7 +63,7 @@ runs:
         ${{ inputs.build-script }}
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@5595ccaf912efad79be6eef63a5619ff05969be3 # v4
+      uses: github/codeql-action/analyze@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4
       env:
         CODEQL_ACTION_EXTRA_OPTIONS: >
           {
